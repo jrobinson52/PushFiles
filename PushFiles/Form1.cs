@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,6 +11,7 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Security.Cryptography;
 
 namespace PushFiles
 {
@@ -20,6 +22,8 @@ namespace PushFiles
         public string strPassword;
         public string strComputer;
 
+
+
         public frmMain()
         {
             InitializeComponent();
@@ -27,48 +31,52 @@ namespace PushFiles
 
         private void Form1_Load(object sender, System.EventArgs e)
         {
-            if (Properties.Settings.Default.UID != string.Empty)
-                txtUID.Text = Properties.Settings.Default.UID;
-            if (Properties.Settings.Default.Password != string.Empty)
-                txtPassword.Text = Properties.Settings.Default.Password;
-            if (Properties.Settings.Default.Remember == true)
-                cboxRemember.Checked = Properties.Settings.Default.Remember;
+
+            #region recover saved data from C:\Config\Properties.ini
+
+            string a = File.ReadAllText(@"C:\Config\Properties.ini"); //read from file to string
+            string[] words = a.Split('|'); // creates an array words where each entry is "a" word from a separated by '|'
+
+            strUID = words[0]; //takes first word from file to the ID
+            string encryptedPassword = words[1]; //takes second word from file to the string (in encrypted form)
+            cboxRemember.Checked = Convert.ToBoolean(words[2]); //takes true or false and applies it to the checkbox
+
+
+            txtUID.Text = strUID;
+            txtPassword.Text = Encrypt.DecryptString(encryptedPassword, strUID);
+
+            #endregion
+
+
         }
 
         private void Form1_FormClosing(Object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.Save();
+            if (cboxRemember.Checked == true) //write settings to file
+            {
+                Directory.CreateDirectory(@"C:\Config\");
+                File.WriteAllText(@"C:\Config\Properties.ini", txtUID.Text + "|" + Encrypt.EncryptString(txtPassword.Text, txtUID.Text) + "|" + cboxRemember.Checked.ToString());
+            }
+            else
+            {
+                try
+                {
+                    File.Delete(@"C:\Config\Properties.ini");
+                }
+                catch { }
+            }
         }
 
-        private void textBox1_KeyDown(object sender, KeyEventArgs e) //supposed to stop spaces . and \ from being processed
+        private void txtComputername_KeyDown(object sender, KeyEventArgs e) //supposed to stop spaces . and \ from being processed
         {
             if (e.KeyCode == Keys.Space || e.KeyCode == Keys.OemPeriod || e.KeyCode == Keys.OemBackslash)
                 e.Handled = false;
 
         }
 
-        public SecureString ConvertToSecureString(string password) //creates secure password string for pushing files
-        {
-            if (password == null)
-                throw new ArgumentNullException("password");
-
-            var securePassword = new SecureString();
-
-            foreach (char c in password)
-                securePassword.AppendChar(c);
-
-            securePassword.MakeReadOnly();
-            return securePassword;
-        }
-
         private void btnSend_Click(object sender, EventArgs e)
         {
-            if (cboxRemember.Checked == true)
-            {
-                Properties.Settings.Default.UID = txtUID.Text;
-                Properties.Settings.Default.Password = txtPassword.Text;
-                Properties.Settings.Default.Remember = cboxRemember.Checked;
-            }
+
 
             strUID = txtUID.Text;
             strPassword = txtPassword.Text;
@@ -136,8 +144,6 @@ namespace PushFiles
 
         }
 
-
-
         private void MapRemoteComputer(string computer)
         {
 
@@ -169,7 +175,57 @@ namespace PushFiles
             process.Start();
             process.WaitForExit(10000); //wait 10 seconds at max
         }
+        
 
+      
 
     }
+
+  public static class Encrypt
+        {
+            // This size of the IV (in bytes) must = (keysize / 8).  Default keysize is 256, so the IV must be
+            // 32 bytes long.  Using a 16 character string here gives us 32 bytes when converted to a byte array.
+            private const string initVector = "pemgail9uzpgzl88";  // This constant is used to determine the keysize of the encryption algorithm
+            private const int keysize = 256;
+
+            //Encrypt
+            public static string EncryptString(string plainText, string passPhrase)
+            {
+                byte[] initVectorBytes = Encoding.UTF8.GetBytes(initVector);
+                byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+                PasswordDeriveBytes password = new PasswordDeriveBytes(passPhrase, null);
+                byte[] keyBytes = password.GetBytes(keysize / 8);
+                RijndaelManaged symmetricKey = new RijndaelManaged();
+                symmetricKey.Mode = CipherMode.CBC;
+                ICryptoTransform encryptor = symmetricKey.CreateEncryptor(keyBytes, initVectorBytes);
+                MemoryStream memoryStream = new MemoryStream();
+                CryptoStream cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
+                cryptoStream.Write(plainTextBytes, 0, plainTextBytes.Length);
+                cryptoStream.FlushFinalBlock();
+                byte[] cipherTextBytes = memoryStream.ToArray();
+                memoryStream.Close();
+                cryptoStream.Close();
+                return Convert.ToBase64String(cipherTextBytes);
+            }
+
+            //Decrypt
+            public static string DecryptString(string cipherText, string passPhrase)
+            {
+                byte[] initVectorBytes = Encoding.UTF8.GetBytes(initVector);
+                byte[] cipherTextBytes = Convert.FromBase64String(cipherText);
+                PasswordDeriveBytes password = new PasswordDeriveBytes(passPhrase, null);
+                byte[] keyBytes = password.GetBytes(keysize / 8);
+                RijndaelManaged symmetricKey = new RijndaelManaged();
+                symmetricKey.Mode = CipherMode.CBC;
+                ICryptoTransform decryptor = symmetricKey.CreateDecryptor(keyBytes, initVectorBytes);
+                MemoryStream memoryStream = new MemoryStream(cipherTextBytes);
+                CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
+                byte[] plainTextBytes = new byte[cipherTextBytes.Length];
+                int decryptedByteCount = cryptoStream.Read(plainTextBytes, 0, plainTextBytes.Length);
+                memoryStream.Close();
+                cryptoStream.Close();
+                return Encoding.UTF8.GetString(plainTextBytes, 0, decryptedByteCount);
+            }
+        }
+    
 }

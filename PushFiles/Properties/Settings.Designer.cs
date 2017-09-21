@@ -49,7 +49,6 @@ namespace PushFiles.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool Remember {
             get {
                 return ((bool)(this["Remember"]));
