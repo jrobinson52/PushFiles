@@ -54,6 +54,10 @@ namespace PushFiles._1
 
         private void Form1_FormClosing(Object sender, FormClosingEventArgs e)
         {
+            // remove spaces from password or username field
+            txtUID.Text = txtUID.Text.Replace(" ", "");
+            txtPassword.Text = txtPassword.Text.Replace(" ", "");
+
             if (cboxRemember.Checked == true) //write settings to file
             {
                 Directory.CreateDirectory(@"C:\Config\");
@@ -78,7 +82,9 @@ namespace PushFiles._1
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-
+            txtUID.Text = txtUID.Text.Replace(" ", "");
+            txtPassword.Text = txtPassword.Text.Replace(" ", "");
+            txtComputerName.Text = txtComputerName.Text.Replace(" ", "");
 
             strUID = txtUID.Text;
             strPassword = txtPassword.Text;
@@ -123,10 +129,41 @@ namespace PushFiles._1
         private void btnDisconnect_Click_1(object sender, EventArgs e)
         {
 
+            DialogResult result = MessageBox.Show("Do you want to delete files in the 'Clear Script' folder?", "", MessageBoxButtons.YesNoCancel);
+
+            if (result == DialogResult.Yes)
+            {
+                try
+                {
+                    Directory.Delete(@"X:\ClearScript", true);
+                    MessageBox.Show("Successfully deleted files on remote computer.", "Success!");
+
+                }
+                catch
+                {
+                    MessageBox.Show($"Unable to delete files on remote computer.\n{strComputer} will be disconnected.", "Error");
+                }
+                UnMapRemoteComputer();
+            }
+            else if (result == DialogResult.No)
+            {
+                try
+                {
+                    UnMapRemoteComputer();
+                    MessageBox.Show($"{strComputer} disconnected successfully.");
+                }
+                catch
+                {
+                    MessageBox.Show($"{strComputer} did not disconnect successfully.");
+                }
+            }
+
+
+            /*
             try
             {
-               // File.Delete(@"X:\ClearScript\Clear.ps1");
-               // File.Delete(@"X:\ClearScript\LaunchClear.bat");
+                // File.Delete(@"X:\ClearScript\Clear.ps1");
+                // File.Delete(@"X:\ClearScript\LaunchClear.bat");
                 Directory.Delete(@"X:\ClearScript", true); //delete this folder and contents recursively
 
                 MessageBox.Show("Successfully deleted files on remote computer.", "Success!");
@@ -141,7 +178,7 @@ namespace PushFiles._1
 
 
             UnMapRemoteComputer();
-
+            */
 
         }
 
@@ -150,16 +187,16 @@ namespace PushFiles._1
 
             string args = $@"use X: \\{computer}.tmm.na.corp.toyota.com\c$ /user:TMM\{strUID} {strPassword}";
 
-                 
+
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             startInfo.FileName = "cmd.exe";
             startInfo.Arguments = $"/c net {args}";
             process.StartInfo = startInfo;
             process.Start();
             process.WaitForExit(10000); //wait 10 seconds at max
-           
+
             // System.Diagnostics.Process.Start("net.exe", arguments: args);
         }
 
@@ -187,6 +224,20 @@ namespace PushFiles._1
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             txtComputerName.Text = string.Empty;
+        }
+
+        private void btnView_Click(object sender, EventArgs e)
+        {
+            txtUID.Text = txtUID.Text.Replace(" ", "");
+            txtPassword.Text = txtPassword.Text.Replace(" ", "");
+            txtComputerName.Text = txtComputerName.Text.Replace(" ", "");
+
+            strUID = txtUID.Text;
+            strPassword = txtPassword.Text;
+            strComputer = txtComputerName.Text;
+
+            MapRemoteComputer(txtComputerName.Text);
+            Process.Start("explorer.exe", @"X:\");
         }
     }
 
