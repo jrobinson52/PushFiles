@@ -1,0 +1,19 @@
+C:\Users\421067\Documents\Visual Studio 2017\Projects\PushFiles.1\PushFiles.1\bin\Debug\PushFiles.1.exe.config
+C:\Users\421067\Documents\Visual Studio 2017\Projects\PushFiles.1\PushFiles.1\bin\Debug\PushFiles.1.exe
+C:\Users\421067\Documents\Visual Studio 2017\Projects\PushFiles.1\PushFiles.1\bin\Debug\PushFiles.1.pdb
+C:\Users\421067\Documents\Visual Studio 2017\Projects\PushFiles.1\PushFiles.1\obj\Debug\PushFiles._1.frmMain.resources
+C:\Users\421067\Documents\Visual Studio 2017\Projects\PushFiles.1\PushFiles.1\obj\Debug\PushFiles._1.Properties.Resources.resources
+C:\Users\421067\Documents\Visual Studio 2017\Projects\PushFiles.1\PushFiles.1\obj\Debug\PushFiles.1.csproj.GenerateResource.Cache
+C:\Users\421067\Documents\Visual Studio 2017\Projects\PushFiles.1\PushFiles.1\obj\Debug\PushFiles.1.csproj.CoreCompileInputs.cache
+C:\Users\421067\Documents\Visual Studio 2017\Projects\PushFiles.1\PushFiles.1\obj\Debug\PushFiles.1.exe
+C:\Users\421067\Documents\Visual Studio 2017\Projects\PushFiles.1\PushFiles.1\obj\Debug\PushFiles.1.pdb
+C:\Users\Joshua\source\repos\PushFiles\PushFiles.1\bin\Debug\PushFiles.1.exe.config
+C:\Users\Joshua\source\repos\PushFiles\PushFiles.1\bin\Debug\PushFiles.1.exe
+C:\Users\Joshua\source\repos\PushFiles\PushFiles.1\bin\Debug\PushFiles.1.pdb
+C:\Users\Joshua\source\repos\PushFiles\PushFiles.1\obj\Debug\PushFiles.1.csprojResolveAssemblyReference.cache
+C:\Users\Joshua\source\repos\PushFiles\PushFiles.1\obj\Debug\PushFiles._1.frmMain.resources
+C:\Users\Joshua\source\repos\PushFiles\PushFiles.1\obj\Debug\PushFiles._1.Properties.Resources.resources
+C:\Users\Joshua\source\repos\PushFiles\PushFiles.1\obj\Debug\PushFiles.1.csproj.GenerateResource.Cache
+C:\Users\Joshua\source\repos\PushFiles\PushFiles.1\obj\Debug\PushFiles.1.csproj.CoreCompileInputs.cache
+C:\Users\Joshua\source\repos\PushFiles\PushFiles.1\obj\Debug\PushFiles.1.exe
+C:\Users\Joshua\source\repos\PushFiles\PushFiles.1\obj\Debug\PushFiles.1.pdb
